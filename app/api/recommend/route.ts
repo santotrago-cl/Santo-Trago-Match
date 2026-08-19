@@ -5,7 +5,7 @@ import { recommend } from "@/lib/engine";
 import {
   extractIntentPlaceholder,
   mergeIntent,
-  missingQuestion,
+  questionFor,
   normalizeIntent,
 } from "@/lib/intent";
 import { extractIntentLLM, LlmError } from "@/lib/llm";
@@ -108,7 +108,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     const res: RecommendApiResponse = {
       status: "need_more_info",
       intent,
-      question: missingQuestion(intent.missing),
+      question: questionFor(intent),
     };
     return NextResponse.json(withSource(res, { intentSource }));
   }

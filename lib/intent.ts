@@ -97,7 +97,28 @@ export function mergeIntent(prev: Intent | null, next: Intent): Intent {
   };
 }
 
-/** Pregunta amable según qué falta. */
+/** Bienvenida cálida cuando el mensaje no trae ninguna pista (ej. "Hola"). */
+export const WELCOME_QUESTION =
+  "¡Hola! 🍹 Cuéntame qué estás buscando: para cuántas personas es, qué sabores prefieren y cuánto quieren gastar.";
+
+/** True si el mensaje no aportó ninguna señal útil todavía. */
+export function isColdOpen(intent: Intent): boolean {
+  return (
+    intent.people == null &&
+    intent.budget == null &&
+    intent.preferences.length === 0 &&
+    intent.avoid.length === 0 &&
+    !intent.wantsVariety
+  );
+}
+
+/** Pregunta a mostrar cuando faltan datos: bienvenida si es un saludo, si no, la puntual. */
+export function questionFor(intent: Intent): string {
+  if (isColdOpen(intent)) return WELCOME_QUESTION;
+  return missingQuestion(intent.missing);
+}
+
+/** Pregunta amable según qué dato puntual falta. */
 export function missingQuestion(missing: MissingField[]): string {
   const hasP = missing.includes("people");
   const hasB = missing.includes("budget");
@@ -115,43 +136,58 @@ export function missingQuestion(missing: MissingField[]): string {
 export function extractIntentPlaceholder(
   text: string,
 ): z.infer<typeof IntentSchema> {
-  const t = ` ${text.toLowerCase()} `;
+  let t = ` ${text.toLowerCase()} `;
 
-  // Personas
+  const wordK: Record<string, number> = {
+    diez: 10, quince: 15, veinte: 20, treinta: 30, cuarenta: 40, cincuenta: 50,
+  };
+
+  // ---- Presupuesto: se extrae PRIMERO y se elimina del texto, para no
+  // confundir sus dígitos con la cantidad de personas. ----
+  let budget: number | null = null;
+  const budgetPatterns: Array<{ re: RegExp; kind: "numK" | "wordK" | "raw" }> = [
+    { re: /(\d{1,3})\s*lucas/, kind: "numK" },
+    { re: /\b(diez|quince|veinte|treinta|cuarenta|cincuenta)\s*lucas/, kind: "wordK" },
+    { re: /(\d{1,3})\s*mil/, kind: "numK" },
+    { re: /\b(diez|quince|veinte|treinta|cuarenta|cincuenta)\s*mil/, kind: "wordK" },
+    { re: /\$\s*(\d{1,3}(?:[.\s]\d{3})+|\d{3,7})/, kind: "raw" },
+    { re: /(\d{1,3}(?:[.\s]\d{3})+)/, kind: "raw" },
+    { re: /\b(\d{4,7})\b/, kind: "raw" },
+  ];
+  for (const p of budgetPatterns) {
+    const m = t.match(p.re);
+    if (!m) continue;
+    if (p.kind === "numK") budget = parseInt(m[1], 10) * 1000;
+    else if (p.kind === "wordK") budget = wordK[m[1]] * 1000;
+    else budget = parseInt(m[1].replace(/[.\s]/g, ""), 10);
+    t = t.replace(m[0], " ");
+    break;
+  }
+
+  // ---- Personas (sobre el texto ya sin el monto) ----
   let people: number | null = null;
   const peopleMatch =
     t.match(/somos\s+(\d{1,3})/) ||
-    t.match(/(\d{1,3})\s*(personas|amigos|amigas|invitados)/);
+    t.match(/\bpara\s+(?:unas?\s+)?(\d{1,3})/) ||
+    t.match(/(\d{1,3})\s*(?:personas?|amigos?|amigas?|invitados?|pers\b)/);
   if (peopleMatch) people = parseInt(peopleMatch[1], 10);
   else {
     const words: Record<string, number> = {
-      dos: 2, tres: 3, cuatro: 4, cinco: 5, seis: 6,
+      un: 1, una: 1, uno: 1, dos: 2, tres: 3, cuatro: 4, cinco: 5, seis: 6,
       siete: 7, ocho: 8, nueve: 9, diez: 10,
     };
     for (const [w, n] of Object.entries(words)) {
       if (t.includes(` ${w} `)) { people = n; break; }
     }
+    // Número suelto pequeño (1-30) → personas (ej. "2, $20.000" → 2).
+    if (people == null) {
+      const bare = t.match(/\b(\d{1,2})\b/);
+      if (bare) {
+        const n = parseInt(bare[1], 10);
+        if (n >= 1 && n <= 30) people = n;
+      }
+    }
   }
-
-  // Presupuesto: "$20.000", "20000", "20 lucas", "veinte lucas"
-  let budget: number | null = null;
-  const lucasNum = t.match(/(\d{1,3})\s*lucas/);
-  const pesos = t.match(/\$?\s*(\d{1,3}(?:[.\s]\d{3})+|\d{4,7})/);
-  const lucasWord = t.match(
-    /\b(diez|quince|veinte|treinta|cuarenta|cincuenta)\s*lucas/,
-  );
-  const milNum = t.match(/(\d{1,3})\s*mil/);
-  const milWord = t.match(
-    /\b(diez|quince|veinte|treinta|cuarenta|cincuenta)\s*mil/,
-  );
-  const wordK: Record<string, number> = {
-    diez: 10, quince: 15, veinte: 20, treinta: 30, cuarenta: 40, cincuenta: 50,
-  };
-  if (lucasNum) budget = parseInt(lucasNum[1], 10) * 1000;
-  else if (lucasWord) budget = wordK[lucasWord[1]] * 1000;
-  else if (milNum) budget = parseInt(milNum[1], 10) * 1000;
-  else if (milWord) budget = wordK[milWord[1]] * 1000;
-  else if (pesos) budget = parseInt(pesos[1].replace(/[.\s]/g, ""), 10);
 
   // Preferencias / evitar
   const preferences = new Set<string>();
