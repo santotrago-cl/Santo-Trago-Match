@@ -1,0 +1,198 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Identidad visual Santo Trago — tokens centralizados.
+   Paleta derivada de la carta oficial: negro carbón + dorado/ámbar,
+   blanco cálido, grises cálidos. Cambiar aquí re-tematiza toda la app.
+   ============================================================ */
+:root {
+  /* Fondos y superficies */
+  --background: #0f0d0b; /* negro carbón cálido */
+  --background-2: #131010;
+  --surface: rgba(255, 255, 255, 0.035);
+  --surface-secondary: rgba(255, 255, 255, 0.06);
+  --border: rgba(203, 161, 74, 0.18); /* hairline dorado muy sutil */
+
+  /* Marca */
+  --brand-primary: #cba14a; /* dorado carta */
+  --brand-primary-soft: #e4c06a; /* dorado claro para degradado CTA */
+  --brand-secondary: #8a6d2f; /* bronce/dorado profundo */
+
+  /* Texto */
+  --text-primary: #f3ece0; /* blanco cálido (roto) */
+  --text-secondary: #b4a794; /* gris cálido */
+
+  /* Estados */
+  --success: #6fbf73; /* verde mojito */
+  --error: #e0736b;
+
+  /* --- Aliases usados por los componentes existentes --- */
+  --bg: var(--background);
+  --card: var(--surface);
+  --card-border: var(--border);
+  --text: var(--text-primary);
+  --muted: var(--text-secondary);
+  --gold: var(--brand-primary);
+  --gold-soft: var(--brand-primary-soft);
+  --mint: var(--success);
+  --danger: var(--error);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-text: var(--text-primary);
+  --color-muted: var(--text-secondary);
+  --color-gold: var(--brand-primary);
+  --color-success: var(--success);
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  min-height: 100dvh;
+  color: var(--text-primary);
+  background:
+    radial-gradient(1100px 520px at 50% -12%, rgba(203, 161, 74, 0.1) 0%, transparent 60%),
+    radial-gradient(760px 520px at 100% 6%, rgba(138, 109, 47, 0.1) 0%, transparent 55%),
+    linear-gradient(180deg, var(--background-2) 0%, var(--background) 62%);
+  background-attachment: fixed;
+  font-family:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- Componentes reutilizables ---- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  backdrop-filter: blur(12px);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  background: var(--surface-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+
+.btn-primary {
+  background: linear-gradient(180deg, var(--brand-primary-soft), var(--brand-primary));
+  color: #241a06;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  border-radius: 14px;
+  transition: transform 0.12s ease, filter 0.12s ease, opacity 0.12s ease;
+  box-shadow: 0 8px 26px -10px rgba(203, 161, 74, 0.65);
+}
+.btn-primary:hover:not(:disabled) {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  background: var(--surface-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  border-radius: 12px;
+  transition: background 0.12s ease, transform 0.12s ease, border-color 0.12s ease;
+}
+.btn-ghost:hover:not(:disabled) {
+  background: rgba(203, 161, 74, 0.1);
+  border-color: rgba(203, 161, 74, 0.35);
+  transform: translateY(-1px);
+}
+.btn-ghost:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-wa {
+  background: linear-gradient(180deg, #34d17a, #1ea95c);
+  color: #04240f;
+  font-weight: 700;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px -8px rgba(30, 169, 92, 0.55);
+  transition: filter 0.12s ease, transform 0.12s ease;
+}
+.btn-wa:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
+.input-main {
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  color: var(--text-primary);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.input-main:focus {
+  outline: none;
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 3px rgba(203, 161, 74, 0.18);
+}
+.input-main::placeholder {
+  color: var(--text-secondary);
+}
+
+/* Divisor con diamante — guiño al motivo de la carta */
+.divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  color: var(--brand-primary);
+}
+.divider::before,
+.divider::after {
+  content: "";
+  height: 1px;
+  width: 40px;
+  background: linear-gradient(90deg, transparent, rgba(203, 161, 74, 0.5));
+}
+.divider::after {
+  background: linear-gradient(90deg, rgba(203, 161, 74, 0.5), transparent);
+}
+
+.spinner {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  border: 2.5px solid rgba(255, 255, 255, 0.16);
+  border-top-color: var(--brand-primary);
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.35s ease both;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
