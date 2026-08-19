@@ -2,9 +2,16 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Santo Match 🍹 · Santo Trago",
+  metadataBase: new URL("https://santo-trago-match.vercel.app"),
+  title: "Santo Match · Santo Trago",
   description:
-    "Cuéntanos qué necesitas y encuentra el mojito perfecto para tu momento.",
+    "Encuentra el mojito perfecto para tu momento. Cuéntanos qué buscas y Santo Match arma tu pedido.",
+  openGraph: {
+    title: "Santo Match · Santo Trago",
+    description: "Encuentra el mojito perfecto para tu momento.",
+    type: "website",
+    locale: "es_CL",
+  },
 };
 
 export const viewport: Viewport = {
