@@ -9,9 +9,9 @@
  * Ajustable tras pruebas sin tocar el motor.
  */
 export const SERVINGS: Record<number, { coverage: number; label: string }> = {
-  300: { coverage: 1, label: "~1 persona" },
-  500: { coverage: 2, label: "~1–2 personas" },
-  1000: { coverage: 3, label: "~3–4 personas" },
+  300: { coverage: 1, label: "~1 persona (para tomar poco)" },
+  500: { coverage: 1, label: "~1 persona" },
+  1000: { coverage: 3, label: "~3 personas" },
 };
 
 export function coverageFor(size_ml: number): number {
