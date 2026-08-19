@@ -19,8 +19,9 @@ export function Hero() {
       <p className="mt-3 text-lg" style={{ color: "var(--text)" }}>
         Encuentra el mojito perfecto para tu momento.
       </p>
-      <p className="mt-2 text-sm max-w-md mx-auto" style={{ color: "var(--muted)" }}>
-        Cuéntanos qué buscas y Santo Match encontrará una combinación para ti.
+      <p className="mt-2 text-sm max-w-md mx-auto leading-relaxed" style={{ color: "var(--muted)" }}>
+        Cuéntanos en tus palabras qué buscas. Santo Match interpreta tus
+        preferencias y las cruza con el catálogo real de Santo Trago.
       </p>
       <div className="divider mt-5">
         <span className="text-xs">◆</span>

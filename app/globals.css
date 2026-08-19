@@ -134,6 +134,25 @@ body {
   transform: translateY(-1px);
 }
 
+/* Acción secundaria discreta (no compite con el CTA de WhatsApp) */
+.btn-secondary-link {
+  color: var(--text-secondary);
+  border-bottom: 1px solid transparent;
+  transition: color 0.12s ease, border-color 0.12s ease;
+  padding-bottom: 1px;
+}
+.btn-secondary-link:hover {
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+/* Microinteracción "pressed": muy sutil */
+.btn-primary:active:not(:disabled),
+.btn-wa:active,
+.btn-ghost:active:not(:disabled) {
+  transform: translateY(0) scale(0.99);
+}
+
 .input-main {
   background: rgba(0, 0, 0, 0.28);
   border: 1px solid var(--border);

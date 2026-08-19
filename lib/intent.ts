@@ -123,9 +123,9 @@ export function missingQuestion(missing: MissingField[]): string {
   const hasP = missing.includes("people");
   const hasB = missing.includes("budget");
   if (hasP && hasB)
-    return "¡Perfecto! 🍹 ¿Para cuántas personas sería y cuánto quieres gastar aproximadamente?";
-  if (hasP) return "¡Buenísimo! 🍹 ¿Para cuántas personas sería?";
-  return "¡Genial! 🍹 ¿Cuánto te gustaría gastar aproximadamente?";
+    return "Casi lo tenemos 🍹 ¿Para cuántas personas sería y cuánto quieres gastar aproximadamente?";
+  if (hasP) return "Casi lo tenemos 🍹 ¿Para cuántas personas sería?";
+  return "Casi lo tenemos 🍹 ¿Cuánto quieres gastar aproximadamente?";
 }
 
 /* ------------------------------------------------------------------ *

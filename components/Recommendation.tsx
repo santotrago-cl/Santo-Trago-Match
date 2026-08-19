@@ -30,7 +30,7 @@ export function Recommendation({ rec, intent }: Props) {
         {rec.withinBudget ? (
           <span
             className="chip"
-            style={{ color: "var(--mint)", borderColor: "rgba(111,227,176,0.4)" }}
+            style={{ color: "var(--success)", borderColor: "rgba(111,191,115,0.4)" }}
           >
             ✓ Dentro de tu presupuesto
             {intent.budget ? ` (${formatCLP(intent.budget)})` : ""}
@@ -38,7 +38,7 @@ export function Recommendation({ rec, intent }: Props) {
         ) : (
           <span
             className="chip"
-            style={{ color: "var(--gold)", borderColor: "rgba(232,176,75,0.4)" }}
+            style={{ color: "var(--gold)", borderColor: "rgba(203,161,74,0.4)" }}
           >
             ⚠ Supera tu presupuesto
             {intent.budget ? ` (${formatCLP(intent.budget)})` : ""}
@@ -46,9 +46,17 @@ export function Recommendation({ rec, intent }: Props) {
         )}
       </div>
 
-      <p className="text-sm mt-4 leading-relaxed" style={{ color: "var(--text)" }}>
-        {rec.explanation}
-      </p>
+      <div className="mt-5">
+        <div
+          className="text-[11px] uppercase tracking-wide mb-1.5"
+          style={{ color: "var(--muted)" }}
+        >
+          ¿Por qué este Match?
+        </div>
+        <p className="text-sm leading-relaxed" style={{ color: "var(--text)" }}>
+          {rec.explanation}
+        </p>
+      </div>
     </div>
   );
 }

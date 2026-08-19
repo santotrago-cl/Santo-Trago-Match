@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Hero } from "@/components/Hero";
 import { QueryInput } from "@/components/QueryInput";
 import { Recommendation } from "@/components/Recommendation";
 import { AdjustButtons } from "@/components/AdjustButtons";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { LoadingState, ErrorState, InfoBubble } from "@/components/Feedback";
+import { HowItWorks } from "@/components/HowItWorks";
+import { AiBadge } from "@/components/AiBadge";
 import type {
   Adjustment,
   Intent,
@@ -15,7 +17,7 @@ import type {
 } from "@/types";
 
 const GENERIC_ERROR =
-  "Algo salió mal. Inténtalo de nuevo en un momento 🙏";
+  "No pudimos encontrar tu Match esta vez. Inténtalo nuevamente en unos segundos.";
 
 export default function Home() {
   const [loading, setLoading] = useState(false);
@@ -27,6 +29,15 @@ export default function Home() {
   const [rec, setRec] = useState<Rec | null>(null);
   const [recIntent, setRecIntent] = useState<Intent | null>(null);
   const [excluded, setExcluded] = useState<string[]>([]);
+  const resultRef = useRef<HTMLDivElement>(null);
+
+  // Al aparecer una recomendación o una pregunta de seguimiento, desplazar
+  // suavemente hasta el resultado para que no quede oculto abajo (clave en móvil).
+  useEffect(() => {
+    if (!loading && (rec || info)) {
+      resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [rec, info, loading]);
 
   async function post(
     url: string,
@@ -76,6 +87,18 @@ export default function Home() {
     }
   }
 
+  function resetSearch() {
+    setRec(null);
+    setRecIntent(null);
+    setKnownIntent(null);
+    setInfo(null);
+    setError(null);
+    setFollowUp(null);
+    setExcluded([]);
+    if (typeof window !== "undefined")
+      window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
   async function handleAdjust(adjustment: Adjustment) {
     if (!rec || !recIntent) return;
     setLoading(true);
@@ -122,19 +145,45 @@ export default function Home() {
         />
       </section>
 
-      {loading && <LoadingState />}
-      {error && !loading && <ErrorState message={error} />}
-      {info && !loading && !rec && <InfoBubble text={info} />}
-
-      {rec && !loading && (
-        <section className="card p-5 sm:p-6">
-          <Recommendation rec={rec} intent={recIntent ?? knownIntent!} />
-          <AdjustButtons onAdjust={handleAdjust} loading={loading} />
-          <WhatsAppButton rec={rec} />
-        </section>
+      {!rec && !loading && (
+        <div className="-mt-1">
+          <HowItWorks />
+        </div>
       )}
 
-      <footer className="mt-2 text-center">
+      {(loading || error || info || rec) && (
+        <div ref={resultRef} className="scroll-mt-4 flex flex-col gap-6">
+          {loading && <LoadingState />}
+          {error && !loading && <ErrorState message={error} />}
+          {info && !loading && !rec && <InfoBubble text={info} />}
+
+          {rec && !loading && (
+            <section className="card p-5 sm:p-6">
+              <Recommendation rec={rec} intent={recIntent ?? knownIntent!} />
+              <AdjustButtons onAdjust={handleAdjust} loading={loading} />
+              <WhatsAppButton rec={rec} />
+              <p
+                className="text-[11px] text-center mt-3"
+                style={{ color: "var(--muted)" }}
+              >
+                Precios y disponibilidad según el catálogo actual de Santo Trago.
+              </p>
+              <div className="text-center mt-4">
+                <button
+                  type="button"
+                  onClick={resetSearch}
+                  className="btn-secondary-link text-sm"
+                >
+                  Hacer otra búsqueda
+                </button>
+              </div>
+            </section>
+          )}
+        </div>
+      )}
+
+      <footer className="mt-2 flex flex-col items-center gap-3 text-center">
+        <AiBadge />
         <p
           className="text-sm italic tracking-wide"
           style={{ color: "var(--brand-primary)" }}
