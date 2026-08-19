@@ -78,12 +78,21 @@ export function computeMissing(
  */
 export function mergeIntent(prev: Intent | null, next: Intent): Intent {
   if (!prev) return next;
-  const preferences = Array.from(
-    new Set([...(prev.preferences ?? []), ...next.preferences]),
-  );
-  const avoid = Array.from(
-    new Set([...(prev.avoid ?? []), ...next.avoid]),
-  ).filter((t) => !preferences.includes(t));
+
+  // "Latest explicit preference wins": los tokens mencionados AHORA (en
+  // preferences o avoid) reemplazan cualquier estado contrario previo para ESE
+  // token. Los tokens previos no relacionados se conservan.
+  const touched = new Set<string>([...next.preferences, ...next.avoid]);
+  const uniq = (arr: string[]) => Array.from(new Set(arr));
+  const preferences = uniq([
+    ...prev.preferences.filter((t) => !touched.has(t)),
+    ...next.preferences,
+  ]);
+  const avoid = uniq([
+    ...prev.avoid.filter((t) => !touched.has(t)),
+    ...next.avoid,
+  ]);
+
   const people = next.people ?? prev.people;
   const budget = next.budget ?? prev.budget;
   return {
