@@ -173,11 +173,12 @@ export function extractIntentPlaceholder(
   if (peopleMatch) people = parseInt(peopleMatch[1], 10);
   else {
     const words: Record<string, number> = {
-      un: 1, una: 1, uno: 1, dos: 2, tres: 3, cuatro: 4, cinco: 5, seis: 6,
+      dos: 2, tres: 3, cuatro: 4, cinco: 5, seis: 6,
       siete: 7, ocho: 8, nueve: 9, diez: 10,
     };
     for (const [w, n] of Object.entries(words)) {
-      if (t.includes(` ${w} `)) { people = n; break; }
+      // \b para detectar el número aunque venga con coma/punto ("dos," → 2).
+      if (new RegExp(`\\b${w}\\b`).test(t)) { people = n; break; }
     }
     // Número suelto pequeño (1-30) → personas (ej. "2, $20.000" → 2).
     if (people == null) {
