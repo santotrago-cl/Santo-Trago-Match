@@ -88,6 +88,9 @@ Reglas:
 - Devuelve SOLO los campos del esquema. No inventes datos: si algo no está en el mensaje, usa null (o listas vacías).
 - budget en CLP entero. Modismos: "lucas" = miles ("20 lucas" = 20000), "X mil" = X*1000, "$20.000" = 20000, "20 mil pesos" = 20000.
 - people: número de personas ("somos cinco" = 5, "para 4" = 4, "somos dos" = 2).
+  Un número suelto pequeño (1–30), aunque venga solo o antes de una coma, casi siempre son PERSONAS:
+  "2, $20.000" → people:2, budget:20000; "4" → people:4; "somos 3" → people:3.
+  (El monto grande o con "mil"/"lucas"/"$" es el presupuesto, NO las personas.)
 - preferences/avoid: usa SOLO estos tokens → sweet (dulce), acidic (ácido), tropical, refreshing (refrescante), intense (intenso/fuerte).
   Ejemplos: "algo tropical" → preferences:["tropical"]; "no muy dulce" / "sin nada dulce" → avoid:["sweet"];
   "no me gusta lo ácido" → avoid:["acidic"]; "algo refrescante" → preferences:["refreshing"].
