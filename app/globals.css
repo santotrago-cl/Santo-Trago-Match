@@ -146,6 +146,45 @@ body {
   border-color: var(--border);
 }
 
+/* Steppers de cantidad (editar pedido) */
+.stepper-btn {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: var(--surface-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  font-size: 18px;
+  line-height: 1;
+  transition: background 0.12s ease, transform 0.1s ease;
+}
+.stepper-btn:hover:not(:disabled) {
+  background: rgba(203, 161, 74, 0.12);
+}
+.stepper-btn:active:not(:disabled) {
+  transform: scale(0.94);
+}
+.stepper-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.select-mini {
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-primary);
+  padding: 0.55rem 0.6rem;
+  font-size: 0.85rem;
+}
+.select-mini:focus {
+  outline: none;
+  border-color: var(--brand-primary);
+}
+
 /* Microinteracción "pressed": muy sutil */
 .btn-primary:active:not(:disabled),
 .btn-wa:active,

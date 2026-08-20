@@ -3,15 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import { Hero } from "@/components/Hero";
 import { QueryInput } from "@/components/QueryInput";
-import { Recommendation } from "@/components/Recommendation";
-import { AdjustButtons } from "@/components/AdjustButtons";
-import { WhatsAppButton } from "@/components/WhatsAppButton";
+import { OrderResult } from "@/components/OrderResult";
 import { LoadingState, ErrorState, InfoBubble } from "@/components/Feedback";
 import { HowItWorks } from "@/components/HowItWorks";
 import { AiBadge } from "@/components/AiBadge";
 import type {
   Adjustment,
   Intent,
+  Product,
   Recommendation as Rec,
   RecommendApiResponse,
 } from "@/types";
@@ -29,7 +28,16 @@ export default function Home() {
   const [rec, setRec] = useState<Rec | null>(null);
   const [recIntent, setRecIntent] = useState<Intent | null>(null);
   const [excluded, setExcluded] = useState<string[]>([]);
+  const [catalog, setCatalog] = useState<Product[]>([]);
   const resultRef = useRef<HTMLDivElement>(null);
+
+  // Catálogo real (solo lectura) para permitir agregar sabores al pedido.
+  useEffect(() => {
+    fetch("/api/catalog")
+      .then((r) => r.json())
+      .then((d) => setCatalog(d.products ?? []))
+      .catch(() => {});
+  }, []);
 
   // Al aparecer una recomendación o una pregunta de seguimiento, desplazar
   // suavemente hasta el resultado para que no quede oculto abajo (clave en móvil).
@@ -159,9 +167,13 @@ export default function Home() {
 
           {rec && !loading && (
             <section className="card p-5 sm:p-6">
-              <Recommendation rec={rec} intent={recIntent ?? knownIntent!} />
-              <AdjustButtons onAdjust={handleAdjust} loading={loading} />
-              <WhatsAppButton rec={rec} />
+              <OrderResult
+                rec={rec}
+                intent={recIntent ?? knownIntent!}
+                catalog={catalog}
+                onAdjust={handleAdjust}
+                loading={loading}
+              />
               <p
                 className="text-[11px] text-center mt-3"
                 style={{ color: "var(--muted)" }}
